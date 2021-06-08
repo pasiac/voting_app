@@ -4,7 +4,7 @@
       <div class="poll-card">
         <h1>{{ poll.title }}</h1>
         <p>{{ poll.description }}</p>
-        <Option v-for="option in poll.options" v-bind:key="option.id" v-bind:option_url="option" />
+        <Options v-bind:options_url="poll.options" />
       </div>
     </div>
   </div>
@@ -12,14 +12,14 @@
 
 <script>
 import axios from 'axios';
-import Option from "@/components/Option";
+import Options from "@/components/Option";
 const API_URL = 'http://127.0.0.1:8000/'
 
 
 
 export default {
   name: 'HelloWorld',
-  components: {Option},
+  components: {Options},
   data () {
     return {
       polls: []

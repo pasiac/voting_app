@@ -1,33 +1,53 @@
 <template>
-  <div class="options" >
-    <p class="option" v-bind:class="{ correct: option.is_correct }">{{ option.title }}</p>
-  </div>
+  <ul class="options">
+    <li
+        v-for="option in options" :key="option.id"
+        :class="[
+              {correct : option.is_correct & clickedName === option.title},
+              {wrong : !option.is_correct & clickedName === option.title}
+            ]"
+        @click="handleClick(option)">
+      {{ option.title }}
+    </li>
+  </ul>
 </template>
 
 <script>
 import axios from 'axios';
+
 export default {
-  name: "Option",
-  props: ['option_url'],
-  data () {
+  name: "Options",
+  props: ['options_url'],
+  data() {
     return {
-      option: {title: 'brak', is_correct: false}
+      options: [],
+      isClicked: false,
+      clickedName: ''
     }
   },
   mounted() {
-    this.getOption()
+    this.getOptions()
   },
   methods: {
-    getOption() {
-      axios({
-        method: 'get',
-        url: this.option_url,
-        auth: {
-          username: 'admin',
-          password: 'admin'
-        }
-      }).then(response => this.option = response.data)
+    getOptions() {
+      // Fix to some axios multi request function
+      this.options_url.forEach(option_url => {
+        axios({
+          method: 'get',
+          url: option_url,
+          auth: {
+            username: 'admin',
+            password: 'admin'
+          }
+        }).then(response => this.options.push(response.data))
+      })
     },
+    handleClick(option) {
+      if (!this.isClicked) {
+        this.clickedName = option.title;
+        this.isClicked = true;
+      }
+    }
   }
 }
 
@@ -35,6 +55,10 @@ export default {
 
 <style scoped>
   .correct {
-    color: green;
+    background-color: green;
+  }
+
+  .wrong {
+    background-color: red;
   }
 </style>
